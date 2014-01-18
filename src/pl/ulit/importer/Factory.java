@@ -22,7 +22,7 @@ import pl.ulit.dbInsert.Database;
 public class Factory {
     public static void main(String args[]) {
         Database db = new Database("MySQL");
-        db.connect("localhost",3306, "IMPORTER", "root", "mlody6");
+        db.connect("localhost",3306, "IMPORTER", "importer", "tD9lPrw5yzmL");
             
               Importer importer = ImporterFactory.createImporter("/home/pawel/Downloads/CWL_PRH_199_20131205_SW.PRH",db.getConnection(),"MySQl");
         try {
