@@ -51,7 +51,7 @@ public class Database {
         {
             return "com.mysql.jdbc.Driver";
         }
-        if("MSSQL".equals(aserver))
+        if("sqlserver".equals(aserver))
         {
             return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         }
@@ -63,16 +63,22 @@ public class Database {
     
 
     public boolean connect(String ahost,Integer aport ,String adatabase, String alogin, String apassword){
-        
+        String url="";
         try{
             Class.forName(driver);
         } catch(java.lang.ClassNotFoundException e) {
             logger.error(e.getLocalizedMessage());
             return false;
         }
-       
-        String url="jdbc:"+server+"://"+ahost+":"+aport.toString()+"/"+adatabase;
-        logger.info(url);
+        if("MySQL".equals(this.server))
+        {
+             url="jdbc:"+server+"://"+ahost+":"+aport.toString()+"/"+adatabase;
+        }
+        if("sqlserver".equals(this.server))
+        {
+             url="jdbc:"+server+"://"+ahost+":"+aport.toString()+";database="+adatabase;
+        }
+        logger.debug(url);
         try {
            this.con = DriverManager.getConnection(url, alogin, apassword);
             return true;
