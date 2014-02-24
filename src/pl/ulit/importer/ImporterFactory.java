@@ -20,7 +20,7 @@ public class ImporterFactory {
         Integer w=afilename.lastIndexOf(".");
        
         extension = afilename.substring(w+1, afilename.length());
-       logger.info("Extension: " + extension);
+        logger.info("Extension: " + extension);
         if(extension.equals("xml"))
         {
             return new ImporterXml(afilename,acon,aDatabase);
@@ -28,7 +28,10 @@ public class ImporterFactory {
         {
             return new ImporterXml(afilename,acon,aDatabase);
         }
-        
+        if("xls".equalsIgnoreCase(extension))
+        {
+            return new ImporterXls(afilename, acon, aDatabase);
+        }
         throw new IllegalArgumentException("No such Importer");
     }
     

@@ -7,6 +7,7 @@ package pl.ulit.dbInsert;
 import java.sql.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.ulit.MSSQLInsert.MSSQLInsertNag;
 import pl.ulit.prh.Prh;
 
 /**
@@ -22,6 +23,10 @@ public class InsertNagFactory {
         if("MYSQL".equals(aDatabase.toUpperCase()))
         {
             return new MySqlInsertNag(acon, aprh);
+        }
+        if("MSSQL".equals(aDatabase.toUpperCase()))
+        {
+            return new MSSQLInsertNag(acon,aprh);
         }
         logger.error("No such InsertNagFactory: "+aDatabase);
         throw new IllegalArgumentException("No such InsertNagFactory");

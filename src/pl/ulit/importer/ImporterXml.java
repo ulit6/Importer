@@ -37,9 +37,9 @@ public class ImporterXml extends Importer {
         Integer w=filename.lastIndexOf(".");
         extension = filename.substring(w+1, filename.length());
        //Ustalenie typu i wersji nagłowka xml
-        ImportXmlFile ixf = null;
+      //  ImportXmlFile ixf = null;
       
-        ixf = new ImportXmlFile(filename);
+        ImportXmlFile ixf = new ImportXmlFile(filename);
         ixf.start();
         
         String typ=ixf.getTyp();

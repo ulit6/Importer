@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import pl.ulit.MSSQLInsert.MSSQLInsertNag;
 import pl.ulit.dbInsert.Database;
+import pl.ulit.prh.Prh;
 
 /*
  * To change this template, choose Tools | Templates
@@ -24,17 +26,17 @@ import pl.ulit.dbInsert.Database;
 public class Factory {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReadXmlFile.class); 
     public static void main(String args[]) {
-        
+       
         Database db = new Database("sqlserver");
-        db.connect("localhost",1433, "AdventureWorks2012", "importer", "tWE4&uir43");
-        /*
-        Database db = new Database("MySQL");
+        
+      //  Database db = new Database("MySQL");
         db.connect("localhost",3306, "IMPORTER", "importer", "tD9lPrw5yzmL");
-        Importer importer = ImporterFactory.createImporter("/home/pawel/Downloads/CWL_PRH_199_20131205_SW.PRH",db.getConnection(),"MySQl");
+        Importer importer = ImporterFactory.createImporter("G:\\CWL_PRH_198_20130911_SW.PRH",db.getConnection(),"MSSQL");
+        // Importer importer = ImporterFactory.createImporter("G:\\plik_parametryzujacy_v.5.xls",db.getConnection(),"MSSQL");
         try {
         Import imp=importer.orderImport();
         imp.start();
-        //    imp.wstaw();
+        //   imp.wstaw();
         } catch (FileNotFoundException ex) {
         Logger.getLogger(Factory.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
@@ -47,14 +49,9 @@ public class Factory {
         Logger.getLogger(Factory.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
         Logger.getLogger(Factory.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        Connection connection = db.getConnection();
-        try {
-           System.out.println(connection.isClosed());
-        } catch (SQLException ex ) {
-            logger.error(ex.getLocalizedMessage());
         }
         db.disconnect();     
+        
        }
 
     

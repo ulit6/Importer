@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.ulit.MSSQLInsert.MSSQLInsertJednostkiMiary;
 import pl.ulit.prh.JednostkaMiary;
 
 /*
@@ -24,6 +25,10 @@ public class InsertJednostkiMiaryFactory {
         if("MYSQL".equals(aDatabase.toUpperCase()))
         {
             return new MySqlInsertJednostkiMiary(acon, ajmList);
+        }
+        if("MSSQL".equals(aDatabase.toString()))
+        {
+            return new MSSQLInsertJednostkiMiary(acon, ajmList);
         }
         logger.error("No such InsertJednostkiMiaryFactory: "+aDatabase);
         throw new IllegalArgumentException("No such InsertJednostkiMiaryFactory");

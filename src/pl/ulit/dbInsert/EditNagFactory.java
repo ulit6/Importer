@@ -7,6 +7,7 @@ package pl.ulit.dbInsert;
 import java.sql.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.ulit.MSSQLInsert.MSSQLEditNag;
 import pl.ulit.prh.Prh;
 
 /**
@@ -21,6 +22,10 @@ public class EditNagFactory {
         if("MYSQL".equals(aDatabase.toUpperCase()))
         {
             return new MySqlEditNag(acon, aprh);
+        }
+        if("MSSQL".equalsIgnoreCase(aDatabase.toUpperCase()))
+        {
+            return new MSSQLEditNag(acon, aprh);
         }
         logger.error("No such MySqlEditNag: "+aDatabase);
         throw new IllegalArgumentException("No such MySqlEditNag");

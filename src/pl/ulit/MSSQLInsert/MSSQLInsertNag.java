@@ -42,14 +42,14 @@ public class MSSQLInsertNag implements DbInsert  {
     @Override
     public void wstaw() throws SQLException {
     CallableStatement cs ;
-    String    sql = "CALL LNPRH_ADD(?,?,?,?)";
+    String    sql = "EXEC IMPORTER.PRH.LNPRH_ADD ?,?,?,?";
     cs=con.prepareCall(sql);
     cs.setInt(1,prh.getWerTech());
     cs.setDouble(2, Double.parseDouble(prh.getWersja()));
     cs.setInt(3, prh.getOddzNfz());
     cs.setString(4,prh.getCzasGen());
     logger.info("LNPRH_ADD");
-    cs.executeQuery();  
+    cs.execute();  
     }
     
   /*  
