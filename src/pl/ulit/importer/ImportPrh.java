@@ -22,7 +22,6 @@ import org.xml.sax.SAXException;
 public class ImportPrh extends ReadXmlFile  {
     private static final Logger logger = LoggerFactory.getLogger(ImportPrh.class);
     private ParserPrh pp;
-    private InsertKomunikatPrh ob;
     public ImportPrh(String afilename,Connection aconn,String aDatabase) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException, SQLException
     {   
        
@@ -30,13 +29,16 @@ public class ImportPrh extends ReadXmlFile  {
         super(afilename);
         logger.info( "Nowy import PRH:" +afilename);
     //    ob = new InsertKomunikatPrh(aconn, aDatabase);
-        pp = new ParserPrh(aconn,aDatabase);
+        handler = new ParserPrh(aconn,aDatabase);
+      //  this.start();
+   //     insert = new InsertKomunikatPrh(aconn, aDatabase);
+//        pp.wstaw();
    //     pp.registerObserver(ob);
    //     pp.registerObserverImport(ob);
-        handler = pp;
+   //   handler = pp;
   //      this.wstaw();
       //  pp.wstaw(aconn, aDatabase);
-
+          
         
   
         
@@ -48,7 +50,7 @@ public class ImportPrh extends ReadXmlFile  {
     @Override
     void wstaw() throws SQLException {
         
-      ob.Insert();
+    //  ob.Insert();
     }
     
     

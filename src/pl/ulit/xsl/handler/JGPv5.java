@@ -33,6 +33,24 @@ public class JGPv5 extends XlsParser implements Import {
     public void parse() {
        setSheet(wbp.getSheet("wersja JGP"));
        SheetHandler sh = new WersjaJGPv5(this.sheet);
+       /*sh.start();
+       setSheet(wbp.getSheet("Zakresy JGP"));
+       sh = new ZakresyJGP(sheet,wbp.getSheet("Mechanizm osobodni"));
+       sh.start();
+       setSheet(wbp.getSheet("wykaz specjalności komórek"));
+       sh = new SpecjalnosciKomorek(sheet);
+       sh.start();
+       setSheet(wbp.getSheet("Listy procedur"));
+       sh = new ListyProcedur(sheet);
+       sh.start();
+       setSheet(wbp.getSheet("Listy rozpoznań"));
+       sh = new ListyRozpoznan(sheet);
+       sh.start();*/
+       setSheet(wbp.getSheet("Ograniczenie wieku"));
+       sh = new OgraniczenieWiekuSheet(sheet);
+       sh.start();
+       setSheet(wbp.getSheet("Ograniczenie pobytu"));
+       sh = new OgraniczenieWiekuSheet(sheet);
        sh.start();
        
     }
@@ -40,7 +58,7 @@ public class JGPv5 extends XlsParser implements Import {
     @Override
     public void start() throws SAXException, IOException, SQLException {
         parse();
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

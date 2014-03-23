@@ -36,7 +36,7 @@ public  abstract class ReadXmlFile implements Import{
    
    protected String filename;
    
-   public ReadXmlFile(String afilename) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException
+   public ReadXmlFile(String afilename) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException, SQLException
    {
            //Create a "parser factory" for creating SAX parsers
            spfac = SAXParserFactory.newInstance();
@@ -44,12 +44,13 @@ public  abstract class ReadXmlFile implements Import{
            //Now use the parser factory to create a SAXParser object
            sp = spfac.newSAXParser();
      
-           filename=afilename;
+           filename=afilename;       
            unzip();
    }
     @Override
    public void start() throws SAXException, IOException,SQLException
    {
+       logger.info("Start parsownia: " + filename);
        sp.parse(filename,handler);
   
       
@@ -83,5 +84,5 @@ public  abstract class ReadXmlFile implements Import{
     	    zis.close();
         
    }
-    abstract void wstaw() throws SQLException;
+   abstract void wstaw() throws SQLException; 
 }

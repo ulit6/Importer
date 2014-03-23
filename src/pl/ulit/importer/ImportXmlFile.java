@@ -4,6 +4,7 @@ package pl.ulit.importer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class ImportXmlFile  extends ReadXmlFile{
     
      final Logger logger = LoggerFactory.getLogger(ImportXmlFile.class);
      
-     public ImportXmlFile(String afilename) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException
+     public ImportXmlFile(String afilename) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException, SQLException
      {
         
         super(afilename);
@@ -40,9 +41,9 @@ public class ImportXmlFile  extends ReadXmlFile{
          return ps.getTyp();
      }
 
-    @Override
-    void wstaw() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+     @Override
+    void wstaw() throws SQLException {          
+              throw new UnsupportedOperationException("Not supported yet.");     
     }
      
     

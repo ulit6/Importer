@@ -114,7 +114,7 @@ public class ParserPrh extends DefaultHandler implements SubjectElement,SubjectI
           
           try{
               logger.info("End element komunikat");
-             // this.notifyObserversImport(1);
+            // this.notifyObserversImport(1);
             //  this.wstaw(this.connection, this.database);
               this.wstaw();
           } 
@@ -159,6 +159,7 @@ public class ParserPrh extends DefaultHandler implements SubjectElement,SubjectI
     }
     public void wstaw() throws SQLException
     {
+      logger.info("Start procedury wsta" + System.nanoTime());
       String wersja = prh.getWersja();
       logger.info("Wersja: " + wersja);
       logger.info("Rozmiar jmlist: "+ jmList.size());
