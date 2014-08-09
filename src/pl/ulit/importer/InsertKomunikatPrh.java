@@ -24,7 +24,7 @@ import pl.ulit.prh.Prh;
  *
  * @author ulit6
  */
-public class InsertKomunikatPrh  extends InsertKomunikat implements ObserverElement,ObserverImport{
+public class InsertKomunikatPrh  extends InsertKomunikat {
     
     private Connection con;
     private ArrayList<GrupaSubstancji> gsList;
@@ -73,43 +73,6 @@ public class InsertKomunikatPrh  extends InsertKomunikat implements ObserverElem
         DbInsert EdtPrh = EditNagFactory.createEditNagFactory(Db, con, prh);
         EdtPrh.wstaw();
     }
+}
 
    
-
-    @Override
-    public void update(Element element) {
-        if(element instanceof Prh){
-            this.prh =(Prh) element;
-            logger.info("Aktualizacja: " + this.prh);     
-        } 
-        if(element instanceof GrupaSubstancji){
-            GrupaSubstancji gs = (GrupaSubstancji)element;
-            this.gsList.add(gs);
-            logger.info("Aktualizacja: "+gs );
-        }
-        if(element instanceof JednostkaMiary){
-            JednostkaMiary jm = (JednostkaMiary)element;
-            this.jmList.add(jm);
-            logger.info("Aktualizacja: " + jm);
-        }
-      /*  if(element instanceof Taryfa){
-            Taryfa taryfa = (Taryfa)element;
-            this.taList.add(taryfa);
-            logger.info("Aktualizacja: " + taryfa);
-                    
-        }*/
-        if(element instanceof PozycjaPrh){
-            PozycjaPrh pp = (PozycjaPrh) element;
-            this.poList.add(pp);
-            logger.info("Aktualizacja: "+pp);
-        }    
-    }
-
-    @Override
-    public void update(Integer astatus) throws SQLException{
-        logger.info("Koniec parsowania");
-        logger.info("Wywołanie insertu");
-        this.Insert();
-    }
-    
-}

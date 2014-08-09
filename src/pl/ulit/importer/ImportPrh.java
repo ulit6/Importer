@@ -10,6 +10,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -19,38 +20,34 @@ import org.xml.sax.SAXException;
  *
  * @author ulit6
  */
-public class ImportPrh extends ReadXmlFile  {
+public class ImportPrh extends ReadXmlFile implements Import{
     private static final Logger logger = LoggerFactory.getLogger(ImportPrh.class);
     private ParserPrh pp;
+    private Connection conn;
+    private String database;
     public ImportPrh(String afilename,Connection aconn,String aDatabase) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException, SQLException
-    {   
+    {     
+        super(afilename,new ParserPrh(aconn,aDatabase));
+        conn = aconn;
+        database = aDatabase;
+    }
+    
+    public ImportPrh(String afilename,DefaultHandler ahandler) throws
+            ParserConfigurationException, SAXException, FileNotFoundException, 
+            IOException, SQLException{
+        
+        super(afilename,ahandler);
+        pp=(ParserPrh)ahandler;
+    }
+    @Override
+    void wstaw() throws SQLException {
        
-       
-        super(afilename);
-        logger.info( "Nowy import PRH:" +afilename);
-    //    ob = new InsertKomunikatPrh(aconn, aDatabase);
-        handler = new ParserPrh(aconn,aDatabase);
-      //  this.start();
-   //     insert = new InsertKomunikatPrh(aconn, aDatabase);
-//        pp.wstaw();
-   //     pp.registerObserver(ob);
-   //     pp.registerObserverImport(ob);
-   //   handler = pp;
-  //      this.wstaw();
-      //  pp.wstaw(aconn, aDatabase);
-          
-        
-  
-        
-
-        
-        
+        pp.wstaw();
     }
 
     @Override
-    void wstaw() throws SQLException {
-        
-    //  ob.Insert();
+    public void start() throws SAXException, IOException, SQLException {
+       this.wstaw();
     }
     
     

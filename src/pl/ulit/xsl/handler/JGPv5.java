@@ -9,6 +9,7 @@ package pl.ulit.xsl.handler;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.xml.sax.SAXException;
@@ -18,11 +19,32 @@ import pl.ulit.importer.Import;
  *
  * @author pawel
  */
-public class JGPv5 extends XlsParser implements Import {
+public class JGPv5 extends XlsParser implements Import,DbInsertMSSQL {
     private HSSFSheet sheet;
-
-    public JGPv5(String afileName) throws FileNotFoundException, IOException {
+    private final Connection conn;
+    private final String database;
+    private final WersjaJGP wersjaJGP;
+    private final ReadJGPWorkSheet specjalnosciKomorek;
+    private final ReadJGPWorkSheet zakresyJGP;
+    private final ReadJGPWorkSheet ograniczeniePobytu;
+    private final ReadJGPWorkSheet ograniczenieWieku;
+    private final ReadJGPWorkSheet listaRozpoznan;
+    private final ReadJGPWorkSheet listaProcedur;
+    private final ReadJGPWorkSheet parametryJGP;
+    
+    
+    public JGPv5(String afileName,Connection conn,String database,int wprm) throws FileNotFoundException, IOException {
         super(afileName);
+        this.conn = conn;
+        this.database = database;
+        wersjaJGP = new WersjaJGP(this.conn);
+        specjalnosciKomorek = new SpecjalnosciKomorek(this.conn);
+        zakresyJGP = new ZakresyJGP(this.conn);
+        ograniczeniePobytu = OgraniczeniePobytuFactory(wprm);
+        ograniczenieWieku = OgraniczenieWiekuFactory(wprm);
+        listaRozpoznan = new ListyRozpoznan(this.conn);
+        listaProcedur = new ListyProcedur(this.conn);
+        parametryJGP = new ParametryJGPSheet(this.conn);
     }
 
     private void setSheet(HSSFSheet aSheet)
@@ -30,35 +52,85 @@ public class JGPv5 extends XlsParser implements Import {
         sheet= aSheet;
     }
     @Override
-    public void parse() {
+    public void parse()throws SQLException {
+       SheetHandler sh;
        setSheet(wbp.getSheet("wersja JGP"));
-       SheetHandler sh = new WersjaJGPv5(this.sheet);
-       /*sh.start();
-       setSheet(wbp.getSheet("Zakresy JGP"));
-       sh = new ZakresyJGP(sheet,wbp.getSheet("Mechanizm osobodni"));
-       sh.start();
+       wersjaJGP.setSheet(this.sheet);
+       wersjaJGP.read();
        setSheet(wbp.getSheet("wykaz specjalności komórek"));
-       sh = new SpecjalnosciKomorek(sheet);
-       sh.start();
-       setSheet(wbp.getSheet("Listy procedur"));
-       sh = new ListyProcedur(sheet);
-       sh.start();
-       setSheet(wbp.getSheet("Listy rozpoznań"));
-       sh = new ListyRozpoznan(sheet);
-       sh.start();*/
-       setSheet(wbp.getSheet("Ograniczenie wieku"));
-       sh = new OgraniczenieWiekuSheet(sheet);
-       sh.start();
+       specjalnosciKomorek.setSheet(this.sheet);
+       specjalnosciKomorek.read();
+       ZakresyJGP zakresy= (ZakresyJGP) zakresyJGP;
+       setSheet(wbp.getSheet("Zakresy JGP"));
+       zakresy.setSheetZakresy(this.sheet);
+       setSheet(wbp.getSheet("Mechanizm osobodni"));
+       zakresy.setSheetMechOsob(this.sheet);
+       zakresy.setWprm(wersjaJGP.getWprm());
+       zakresyJGP.read();
+       
        setSheet(wbp.getSheet("Ograniczenie pobytu"));
-       sh = new OgraniczenieWiekuSheet(sheet);
-       sh.start();
+       ograniczeniePobytu.setSheet(this.sheet);
+       ograniczeniePobytu.setWprm(wersjaJGP.getWprm());
+       ograniczeniePobytu.read();
+       setSheet(wbp.getSheet("Ograniczenie wieku"));
+       ograniczenieWieku.setSheet(this.sheet);
+       ograniczenieWieku.setWprm(wersjaJGP.getWprm());
+       ograniczenieWieku.read();
+       setSheet(wbp.getSheet("Listy rozpoznań"));
+       listaRozpoznan.setSheet(this.sheet);
+       listaRozpoznan.setWprm(wersjaJGP.getWprm());
+       listaRozpoznan.read();
+       setSheet(wbp.getSheet("Listy procedur"));
+       listaProcedur.setSheet(this.sheet);
+       ListyProcedur lp = (ListyProcedur)listaProcedur;
+       lp.setWrjgp(wersjaJGP.getWrjgp());
+       listaProcedur.setWprm(wersjaJGP.getWprm());
+       listaProcedur.read();
+       setSheet(wbp.getSheet("Parametry JGP"));
+       this.parametryJGP.setSheet(this.sheet);
+       parametryJGP.setWprm(wersjaJGP.getWprm());
+       parametryJGP.read();
        
     }
 
     @Override
     public void start() throws SAXException, IOException, SQLException {
         parse();
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        wstawMSSQL();
+    }
+
+    @Override
+    public void wstawMSSQL() throws SQLException {
+        wersjaJGP.wstawMSSQL();
+        DbInsertMSSQL dbSpecjalnosciKomorek = (DbInsertMSSQL) specjalnosciKomorek;
+        dbSpecjalnosciKomorek.wstawMSSQL();
+        DbInsertMSSQL dbZakresyJGP = (DbInsertMSSQL) zakresyJGP;
+        dbZakresyJGP.wstawMSSQL();
+        DbInsertMSSQL dbOgraniczeniePobytu = (DbInsertMSSQL) ograniczeniePobytu;
+        dbOgraniczeniePobytu.wstawMSSQL();
+        DbInsertMSSQL dbOgraniczenieWieku = (DbInsertMSSQL) ograniczenieWieku;
+        dbOgraniczenieWieku.wstawMSSQL();
+        DbInsertMSSQL dbInsertListaRozpoznan = (DbInsertMSSQL)listaRozpoznan;
+        dbInsertListaRozpoznan.wstawMSSQL();
+        DbInsertMSSQL dbInsertListaProcedur = (DbInsertMSSQL)listaProcedur;
+        dbInsertListaProcedur.wstawMSSQL();
+        DbInsertMSSQL dbInsertParametryMSSQL = (DbInsertMSSQL)parametryJGP;
+        dbInsertParametryMSSQL.wstawMSSQL();
     }
     
+    private  ReadJGPWorkSheet OgraniczenieWiekuFactory(int wprm){
+        if( wprm == 5){
+            return new OgraniczenieWiekuSheet(this.conn);
+        }
+        else
+            return new OgraniczenieWiekuSheetv6(this.conn);
+    }
+    
+    private  ReadJGPWorkSheet OgraniczeniePobytuFactory(int wprm){
+        if( wprm == 5){
+            return new OgraniczeniePobytuSheet(this.conn);
+        }
+        else
+            return new OgraniczeniePobytuSheetv6(this.conn);
+    }
 }

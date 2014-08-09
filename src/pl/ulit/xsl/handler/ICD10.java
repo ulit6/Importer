@@ -23,6 +23,12 @@ public class ICD10 {
     //    ranga = aranga;
         
     }
+    public String getKod(){
+        return this.kod;
+    }
+    public String getNazwa(){
+        return this.nazwa;
+    }
     public String toString()
     {
         StringBuilder sb = new StringBuilder();

@@ -6,14 +6,13 @@
 
 package pl.ulit.xsl.handler;
 
-import java.sql.SQLException;
-
 /**
  *
  * @author pawel
  */
-public interface SheetHandler {
-    
-    public void start() throws SQLException;
-    
+public abstract class ReadJGPWorkSheet extends ReadWorkSheet{
+    protected int wprm;
+    public void setWprm(int wprm){
+        this.wprm = wprm;
+    }
 }

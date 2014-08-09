@@ -31,18 +31,14 @@ public class ImporterXls extends Importer {
     Import orderImport() throws IOException, ParserConfigurationException, SAXException, UnsupportedOperationException, FileNotFoundException, SQLException {
         logger.info("New importer XLS");
         logger.info("Filename: "+filename);
-        String extension;
-        String[] split = filename.split("\\.");
-        logger.info("Split length: "+ split.length);
-        Integer wersja = Integer.parseInt(split[split.length-2]);
-        Integer w=filename.lastIndexOf(".");
-        extension = filename.substring(w+1, filename.length());
-        if(wersja==5)
-        {
-            return new JGPv5(filename);
-        }
+        String ver = filename.replaceAll("\\D+","");
+        Integer wersja = Integer.parseInt(ver);
+        /*if(wersja==5)
+        {*/
+                          return new JGPv5(filename,this.con,this.database,wersja);
+       // }
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

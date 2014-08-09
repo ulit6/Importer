@@ -19,7 +19,12 @@ public class KomorkaOrg {
         nazwa = anazwa;
                 
     }
-    
+    public String getKod(){
+        return this.kod;
+    }
+    public String getNazwa(){
+        return this.nazwa;
+    }
     public String toString(){
          StringBuilder sb = new StringBuilder();
          sb.append("Kod: ").append(kod).append("|");

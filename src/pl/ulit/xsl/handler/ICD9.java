@@ -15,13 +15,16 @@ import java.util.Objects;
 public class ICD9 {
     private final String kod;
     private final String nazwa;
- //   private final String ranga;
     
     public ICD9(String akod,String anazwa){
         kod = akod;
-        nazwa = anazwa;  
-    //    ranga = aranga;
-        
+        nazwa = anazwa;        
+    }
+    public String getKod(){
+        return this.kod;
+    }
+    public String getNazwa(){
+        return this.nazwa;
     }
     public String toString()
     {

@@ -27,7 +27,15 @@ public class ListaProcedur {
         procedury = aprocedury;
         
     }
-    
+     public String getKod(){
+        return this.kod;
+    }
+    public String getTyp(){
+        return this.typ;
+    }
+    public Map<ICD9,Integer> getProcedury(){
+        return this.procedury;
+    }
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

@@ -6,6 +6,9 @@
 
 package pl.ulit.xsl.handler;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,21 +22,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author pawel
  */
-public class ZakresyJGP implements SheetHandler {
-    private final HSSFSheet sheet;
+public class ZakresyJGP extends ReadJGPWorkSheet implements DbInsertMSSQL{
     private static final Logger logger = LoggerFactory.getLogger(ZakresyJGP.class); 
     private final List<GrupaJGP> grupyJGP;
-    private  SheetHandler sh ;
-    private final HSSFSheet sheetMechOsob;
-    public ZakresyJGP(HSSFSheet aSheet,HSSFSheet sheetMechOsob)
-    {
+    private  ReadJGPWorkSheet sh ;
+    private  HSSFSheet sheetMechOsob;
+    private final Connection conn;
+    
+    public ZakresyJGP(Connection conn){
        this.grupyJGP = new ArrayList();
-       sheet=aSheet;
-       this.sheetMechOsob = sheetMechOsob;
+       this.conn = conn;  
     }
-
+    public void setSheetZakresy(HSSFSheet sheet){
+        this.sheet = sheet;
+    } 
+    public void setSheetMechOsob(HSSFSheet sheet){
+        this.sheetMechOsob = sheet;
+    }
     @Override
-    public void start() {
+    public void read()  {
         
         
         Iterator<Row> rowIterator = sheet.iterator();
@@ -71,10 +78,31 @@ public class ZakresyJGP implements SheetHandler {
         //mechanizm osobodni
         
         sh = new MechanizmOsobodni(this.sheetMechOsob, grupyJGP);
-        sh.start();
-        for(GrupaJGP grupa:grupyJGP){
+      //  sh.start();
+       /* for(GrupaJGP grupa:grupyJGP){
             logger.info(grupa.toString());
             
+        }*/
+    }
+
+    @Override
+    public void wstawMSSQL() throws SQLException {
+        logger.info("Wstaw MSSQL LGJGP");
+        String sql="INSERT INTO IMPORTER.JGP.LGJGP(WPRM,KJGP,KPRD,NJGP,WHSP,WHPP,WLJD,LDFG,WPDD,WPRY) "+
+                "VALUES(?,?,?,?,?,?,?,?,?,?)";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        for(GrupaJGP grupa:grupyJGP){
+            ps.setInt(1, this.wprm);
+            ps.setString(2,grupa.getKodJGP());
+            ps.setString(3, grupa.getKodProduktu());
+            ps.setString(4,grupa.getNazwa());
+            ps.setInt(5, grupa.getHospitalizacja());
+            ps.setInt(6,grupa.getHospitalizacjaPlanowa());
+            ps.setInt(7,grupa.getLeczenie1dnia());
+            ps.setInt(8,grupa.getLeczenie1dnia());
+            ps.setInt(9,grupa.getHospitalizacja1dnia());
+            ps.setInt(10, grupa.getRyczałt());
+            ps.execute();
         }
     }
     

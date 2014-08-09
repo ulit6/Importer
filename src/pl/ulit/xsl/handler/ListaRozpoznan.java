@@ -24,7 +24,15 @@ public class ListaRozpoznan {
         rozpoznania = arozpoznania;
         
     }
-    
+    public String getKod(){
+        return this.kod;
+    }
+    public String getTyp(){
+        return this.typ;
+    }
+    public ArrayList<ICD10> getRozpoznania(){
+        return this.rozpoznania;
+    }
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

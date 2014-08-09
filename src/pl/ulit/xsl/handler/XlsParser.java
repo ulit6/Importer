@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import pl.ulit.importer.Import;
 
@@ -30,7 +31,7 @@ public abstract class XlsParser  {
       // file.close();
    }
    
-   public abstract void parse();
+   public abstract void parse() throws SQLException;
    
 /*   public void setWorkBookParser(WorkBookParser awbp)
    {

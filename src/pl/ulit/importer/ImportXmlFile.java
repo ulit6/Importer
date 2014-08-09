@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -18,17 +19,13 @@ import org.xml.sax.SAXException;
  *
  * @author ulit6
  */
-public class ImportXmlFile  extends ReadXmlFile{
+public class ImportXmlFile  extends ReadXmlFile implements Import{
     
      final Logger logger = LoggerFactory.getLogger(ImportXmlFile.class);
      
-     public ImportXmlFile(String afilename) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException, SQLException
-     {
-        
-        super(afilename);
-        handler = new ParserKomunikat();
-        logger.info("Nowy import xml file" + afilename);
-         
+     public ImportXmlFile(String afilename,DefaultHandler ahandler) throws ParserConfigurationException, SAXException, FileNotFoundException, IOException, SQLException
+     {        
+        super(afilename,ahandler);
      }
      public String getWersja()
      {
@@ -44,6 +41,11 @@ public class ImportXmlFile  extends ReadXmlFile{
      @Override
     void wstaw() throws SQLException {          
               throw new UnsupportedOperationException("Not supported yet.");     
+    }
+
+    @Override
+    public void start() throws SAXException, IOException, SQLException {
+          logger.info("Nowy import xml file" + filename);
     }
      
     

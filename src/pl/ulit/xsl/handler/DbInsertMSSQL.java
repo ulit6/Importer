@@ -12,8 +12,8 @@ import java.sql.SQLException;
  *
  * @author pawel
  */
-public interface SheetHandler {
-    
-    public void start() throws SQLException;
+public interface DbInsertMSSQL {
+   
+    public void wstawMSSQL() throws SQLException;
     
 }

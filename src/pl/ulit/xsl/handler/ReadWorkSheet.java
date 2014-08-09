@@ -17,12 +17,18 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public  abstract class ReadWorkSheet {
     
-    protected final HSSFSheet sheet;
+    protected  HSSFSheet sheet;
     
+  /*  
     public ReadWorkSheet(HSSFSheet asheet){
         
         sheet = asheet;
-    }
+    }*/
+    
+    public void setSheet(HSSFSheet sheet){
+        this.sheet = sheet;
+    }  
+    
     public boolean isNumericCell(Cell cell){
         
         return cell.getCellType()==0;
@@ -38,7 +44,7 @@ public  abstract class ReadWorkSheet {
         return cell.getCellType()==3;
     }
     
-    public int NumericCelltoInt(Cell cell){
+    public int numericCelltoInt(Cell cell){
         if(!isNumericCell(cell)){
             throw new IllegalArgumentException("Bad cell type");
         }
@@ -46,27 +52,27 @@ public  abstract class ReadWorkSheet {
         return cellValue.intValue();
     }
     
-    public int StringCelltoInt(Cell cell){
+    public int stringCelltoInt(Cell cell){
         if(!isStringCell(cell)){
             throw new IllegalArgumentException("Bad cell type");
         }
         String cellValue = cell.getStringCellValue();
         boolean onlyDigits = cellValue.matches("^\\d{1,}$");
         if(onlyDigits){
-            return StringDigitsValuetoInt(cellValue);
+            return stringDigitsValuetoInt(cellValue);
         }
         else{
-            return CharAndIntCellValuetoInt(cellValue);
+            return charAndIntCellValuetoInt(cellValue);
         }
         
     }
-    private int CharAndIntCellValuetoInt(String stringValue){
+    private int charAndIntCellValuetoInt(String stringValue){
         if(">2".equals(stringValue)){
             return 3;
         }
         throw new UnsupportedOperationException();
     }
-    private int StringDigitsValuetoInt(String stringValue){
+    private int stringDigitsValuetoInt(String stringValue){
         return Integer.parseInt(stringValue);
     }
     
@@ -80,6 +86,6 @@ public  abstract class ReadWorkSheet {
         for(int i=0;i<number;i++){
             cellIterator.next();
         }
-        
     }
+    public abstract void read();
 }

@@ -18,16 +18,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author pawel
  */
-public class MechanizmOsobodni extends ReadWorkSheet implements SheetHandler{
+public class MechanizmOsobodni extends ReadJGPWorkSheet {
     private static final Logger logger = LoggerFactory.getLogger(MechanizmOsobodni.class);
     private final List<GrupaJGP> grupyJGP;
-    public MechanizmOsobodni(HSSFSheet asheet,List<GrupaJGP> agrupyJGP) {
-        super(asheet);
+    private  HSSFSheet sheet;
+    public MechanizmOsobodni(HSSFSheet sheet,List<GrupaJGP> agrupyJGP) {
+        this.sheet = sheet;
         grupyJGP = agrupyJGP;
     }
 
     @Override
-    public void start() {
+    public void read() {
         Cell cell;
         String kodJGP;
         String kodProduktu;
@@ -68,21 +69,21 @@ public class MechanizmOsobodni extends ReadWorkSheet implements SheetHandler{
          Cell cell = cellIterator.next();
          if(isBlankCell(cell))
             return 0;
-       return NumericCelltoInt(cell);
+       return numericCelltoInt(cell);
      }
      
      private int getHospitalizacja1Dnia(Iterator<Cell> cellIterator){
          Cell cell = cellIterator.next();
          if(isBlankCell(cell))
              return 0;
-         return NumericCelltoInt(cell);   
+         return numericCelltoInt(cell);   
      }   
      
      private int getRyczalt(Iterator<Cell> cellIterator){
          Cell cell = cellIterator.next();
          if(isBlankCell(cell))
            return 0;
-       return NumericCelltoInt(cell);  
+       return numericCelltoInt(cell);  
      }
      private void setMechanizmOsobodni(String kodJGP,String kodProduktu,String nazwaJGP,
              int dniPobytuFinansGrupa,int hospitalizacja1dnia,int ryczalt){

@@ -37,6 +37,7 @@ public class GrupaJGP {
         kodProduktu=akodProduktu;
         nazwa=anazwa;
     }
+   
     @Override
     public String toString(){
          StringBuilder sb = new StringBuilder();
@@ -101,4 +102,31 @@ public class GrupaJGP {
         
     }
 
+    public String getKodJGP() {
+       return this.kod;
+    }
+    public String getKodProduktu(){
+        return this.kodProduktu;
+    }
+    public String getNazwa(){
+        return this.nazwa;
+    }
+    public int getHospitalizacja(){
+        return this.hospitalizacja;
+    }
+    public int getHospitalizacjaPlanowa(){
+        return this.hospitalizacjaPlanowa;
+    }
+    public int getLeczenie1dnia(){
+        return this.leczenie1dnia;
+    }
+    public int getDniPobytuFinansGrupa(){
+        return this.dniPobytuFinansGrupa;
+    }        
+    public int getHospitalizacja1dnia(){
+        return this.hospitalizacja1dnia;
+    }
+    public int getRyczałt(){
+        return this.ryczałt;
+    }
 }

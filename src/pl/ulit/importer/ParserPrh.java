@@ -28,7 +28,7 @@ import pl.ulit.prh.Taryfa;
  *
  * @author ulit6
  */
-public class ParserPrh extends DefaultHandler implements SubjectElement,SubjectImport{
+public class ParserPrh extends DefaultHandler {
     
     private Prh prh;
     private String temp;
@@ -109,22 +109,8 @@ public class ParserPrh extends DefaultHandler implements SubjectElement,SubjectI
 
     @Override
       public void endElement(String uri, String localName, String qName) 
-                     throws SAXException {
-       if(qName.equalsIgnoreCase("komunikat")){
-          
-          try{
-              logger.info("End element komunikat");
-            // this.notifyObserversImport(1);
-            //  this.wstaw(this.connection, this.database);
-              this.wstaw();
-          } 
-          catch(SQLException e)
-          {
-              logger.error(e.getLocalizedMessage());
-          }
-                            
-       }
-       if (qName.equalsIgnoreCase("jednostka-miary")) {
+                     throws SAXException { 
+      if (qName.equalsIgnoreCase("jednostka-miary")) {
 
            jm = null;
        }
@@ -149,62 +135,23 @@ public class ParserPrh extends DefaultHandler implements SubjectElement,SubjectI
            katalog = null;
        }
     }
-    
+  /*  
     public void wstaw(Connection acon,String aDB) throws SQLException
     {
+      logger.info("Start procedury wstaw" + System.nanoTime());
+      System.out.println("wstaw:" + aDB);
       String wersja = prh.getWersja();
       logger.info("Wersja: " + wersja);
       InsertKomunikatPrh  InsPrh = new InsertKomunikatPrh(acon, prh, poList, gsList, jmList,aDB,wersja);
       InsPrh.Insert();
-    }
+    }*/
     public void wstaw() throws SQLException
     {
-      logger.info("Start procedury wsta" + System.nanoTime());
+     
       String wersja = prh.getWersja();
-      logger.info("Wersja: " + wersja);
-      logger.info("Rozmiar jmlist: "+ jmList.size());
       InsertKomunikatPrh  InsPrh = new InsertKomunikatPrh(this.connection, this.prh, this.poList, this.gsList, this.jmList,this.database,wersja);
       InsPrh.Insert();
     }
-    @Override
-    public void registerObserver(ObserverElement observer) {
-        logger.info("Observer register");
-        observers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(ObserverElement observer) {
-        logger.info("Observer remove");
-        observers.remove(observer);
-    }
-
-    @Override
-    public void notifyObservers(Element element) {
-        
-        for(ObserverElement ob: observers){
-            logger.info("Notify observers");
-            ob.update(element);
-        }
-    }
-
-   
-
-    @Override
-    public void registerObserverImport(ObserverImport observer) {
-        observersImport.add(observer);
-    }
-
-    @Override
-    public void removeObserverImport(ObserverImport observer) {
-        observersImport.remove(observer);
-    }
-
-    @Override
-    public void notifyObserversImport(Integer astatus) throws SQLException {
-        for(ObserverImport ob: observersImport){
-            logger.info("Notify observers import");
-            ob.update(astatus);
-        }
-    }
+ 
     
 }

@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -21,8 +22,8 @@ import org.xml.sax.SAXException;
 public class ImporterXml extends Importer {
     
     private static final Logger logger = LoggerFactory.getLogger(ImporterXml.class);
-    
-    
+    private String typ="";
+    private String wersja="";
     public ImporterXml(String afilename,Connection acon,String aDatabase)
     {
         super(afilename,acon,aDatabase);
@@ -30,27 +31,20 @@ public class ImporterXml extends Importer {
    
 
     @Override
-    public Import orderImport()  throws IOException,ParserConfigurationException,SAXException,UnsupportedOperationException, FileNotFoundException,SQLException
-    
-    {
-        String extension;
-        Integer w=filename.lastIndexOf(".");
-        extension = filename.substring(w+1, filename.length());
-       //Ustalenie typu i wersji nagłowka xml
-      //  ImportXmlFile ixf = null;
+    public Import orderImport()  throws IOException,ParserConfigurationException,
+           SAXException,UnsupportedOperationException, FileNotFoundException,SQLException{
       
-        ImportXmlFile ixf = new ImportXmlFile(filename);
-        ixf.start();
+        checkTypAndWersja();
+        logger.info("Typ i wersja xml: "+ this.typ +" "+ this.wersja);
+        DefaultHandler handler = ParserFactory.newInstance(this.typ, con, database);         
+        return new ImportPrh(filename, handler);
+    }
+    private void checkTypAndWersja() throws ParserConfigurationException, SAXException, IOException, FileNotFoundException, SQLException{
         
-        String typ=ixf.getTyp();
-        String wersja=ixf.getWersja();
-        logger.info("Typ i wersja xml: "+ typ +" "+ wersja);
-        if("prh".equalsIgnoreCase(typ))
-        {
-           
-                return new ImportPrh(filename,con,database);
-           
-        }
-       throw new UnsupportedOperationException("Not supported yet.");
+        DefaultHandler handler = ParserFactory.newInstance("", con, database);
+        ImportXmlFile ixf = new ImportXmlFile(filename,handler);
+        ixf.start();
+        this.typ=ixf.getTyp();
+        this.wersja=ixf.getWersja();
     }
 }

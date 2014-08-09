@@ -25,7 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author ulit6
  */
-public  abstract class ReadXmlFile implements Import{
+public  abstract class ReadXmlFile {
     
     
    private static final Logger logger = LoggerFactory.getLogger(ReadXmlFile.class); 
@@ -46,15 +46,19 @@ public  abstract class ReadXmlFile implements Import{
      
            filename=afilename;       
            unzip();
+           sp.parse(filename,handler);
    }
-    @Override
-   public void start() throws SAXException, IOException,SQLException
-   {
-       logger.info("Start parsownia: " + filename);
+   public ReadXmlFile(String afilename,DefaultHandler ahandler) throws ParserConfigurationException,
+           SAXException, FileNotFoundException, IOException, SQLException{
+       
+       filename = afilename;
+       handler = ahandler;
+       spfac = SAXParserFactory.newInstance();
+       sp = spfac.newSAXParser();    
+       unzip();
        sp.parse(filename,handler);
-  
-      
    }
+   
    
    public void unzip() throws FileNotFoundException, IOException
    {

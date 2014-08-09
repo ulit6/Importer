@@ -30,9 +30,10 @@ public class Factory {
         Database db = new Database("sqlserver");
         
       //  Database db = new Database("MySQL");
-        db.connect("localhost",1433, "AdventureWorks2012", "importer", "tWE4&uir43");
-       // Importer importer = ImporterFactory.createImporter("G:\\CWL_PRH_198_20130911_SW.PRH",db.getConnection(),"MSSQL");
-         Importer importer = ImporterFactory.createImporter("G:\\plik_parametryzujacy_v.5.xls",db.getConnection(),"MSSQL");
+        db.connect("localhost",1433, "AdventureWorks2012", "ulit", "56fd#23*6!mju");
+        //Importer importer = ImporterFactory.createImporter("G:\\CWL_PRH_198_20130911_SW.PRH",db.getConnection(),"MSSQL");
+       //  Importer importer = ImporterFactory.createImporter("G:\\plik_parametryzujacy_v.5.xls",db.getConnection(),"MSSQL");
+         Importer importer = ImporterFactory.createImporter("G:\\plik_parametryzujacy_v6.xls",db.getConnection(),"MSSQL");
         try {
         Import imp=importer.orderImport();
         imp.start();

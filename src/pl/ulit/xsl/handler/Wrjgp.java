@@ -28,7 +28,24 @@ public class Wrjgp {
         msdo=aMsdo;
         
     }
-    
+    public int getWprm(){
+        return wprm;
+    }
+    public int getWalg(){
+        return walg;
+    }
+    public int getWicd(){
+        return wicd;
+    }
+    public int getRoko(){
+        return roko;
+    }
+    public int getMsod(){
+        return msod;
+    }
+    public int getMsdo(){
+        return msdo;
+    }
     @Override
     public String toString()
     {
