@@ -6,13 +6,35 @@ package pl.ulit.importerView;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
+import static java.lang.System.in;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author ulit6
  */
-public class LoginView extends javax.swing.JDialog {
+public final class LoginView extends javax.swing.JDialog {
+    
+    private enum Rdbms{
+        MYSQL(3306),
+        MSSQL(1433);
+        
+        private final int port;
+        
+        Rdbms(int port) {
+            this.port = port;
+        }
+        
+        public int port(){
+            return port;
+        }
+    };
 
     /**
      * Creates new form LoginView
@@ -21,28 +43,52 @@ public class LoginView extends javax.swing.JDialog {
     public  LoginView(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        init();
+        initScreen();
+     //   loadProperties();
     }
-    public void init()
+    public void initScreen()
     {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = this.getSize();
-        setLocation((screenSize.width-frameSize.width)/4, (screenSize.height-frameSize.height)/2);
+        setLocation((screenSize.width-frameSize.width)/2, (screenSize.height-frameSize.height)/2);
+        String rdbms= (String)RDBMSComboBox.getItemAt(0);
+        logger.info(rdbms);
+        logger.info(Rdbms.MYSQL.toString());
+      
+    }
+    private void loadProperties(){
+        InputStream is = LoginView.class.getResourceAsStream("Importer.properties");
+        Properties config = new Properties();
+        try {
+            config.load(is);
+        } catch (IOException ex) {
+            logger.info(ex.getLocalizedMessage());
+            JOptionPane.showMessageDialog(this.getParent(), ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
+        }
         
+    }
+    public boolean isMySQLRdbms(String rdbms){
+        return Rdbms.MYSQL.toString().equalsIgnoreCase(rdbms);
+    }
+    public void readProperties(String rdbms){
+        if(isMySQLRdbms(rdbms)){
+            
+        }
     }
     public void updatePortTextField(String adb)
     {
         if("MySQL".equals(adb)){
-            PortTextField.setText("3306");
+            PortTextField.setText(String.valueOf(Rdbms.MYSQL.port));
         }
         else{
-            PortTextField.setText("1433");
+            PortTextField.setText(String.valueOf(Rdbms.MSSQL.port));
         }
     }
     public void koniec()
     {
         System.exit(0);
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -228,7 +274,9 @@ public class LoginView extends javax.swing.JDialog {
                         System.exit(0);
                     }
                 });
+                dialog.loadProperties();
                 dialog.setVisible(true);
+                
             }
         });
     }
