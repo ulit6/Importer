@@ -6,87 +6,86 @@ package pl.ulit.importerView;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import static java.lang.System.in;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.slf4j.LoggerFactory;
+import pl.ulit.dbInsert.Database;
+import pl.ulit.dbInsert.DatabaseException;
 
 /**
  *
  * @author ulit6
  */
 public final class LoginView extends javax.swing.JDialog {
-    
-    private enum Rdbms{
-        MYSQL(3306),
-        MSSQL(1433);
-        
-        private final int port;
-        
-        Rdbms(int port) {
-            this.port = port;
-        }
-        
-        public int port(){
-            return port;
-        }
-    };
-
+    private String database;
+    private String host;
+    private String port;
+    private String user;
+    private String rdbms;
+    private final static String propertiesFile = "Importer.properties";
+    private Database db;
+    private Connection con;
     /**
      * Creates new form LoginView
      */
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LoginView.class);
     public  LoginView(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();
-        initScreen();
-     //   loadProperties();
+        initComponents();      
+        initScreen();   
     }
-    public void initScreen()
-    {
+    private void initScreen(){   
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = this.getSize();
         setLocation((screenSize.width-frameSize.width)/2, (screenSize.height-frameSize.height)/2);
-        String rdbms= (String)RDBMSComboBox.getItemAt(0);
-        logger.info(rdbms);
-        logger.info(Rdbms.MYSQL.toString());
-      
+        loadProperties();         
     }
-    private void loadProperties(){
-        InputStream is = LoginView.class.getResourceAsStream("Importer.properties");
+    private void loadProperties() {
+        InputStream is = null;
+        try{
+             is = new FileInputStream(propertiesFile);
+        } catch(FileNotFoundException ex){
+            JOptionPane.showMessageDialog(this, ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
+        }
         Properties config = new Properties();
         try {
             config.load(is);
         } catch (IOException ex) {
-            logger.info(ex.getLocalizedMessage());
-            JOptionPane.showMessageDialog(this.getParent(), ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
+             JOptionPane.showMessageDialog(this, ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
+            
+        }
+        
+        database = config.getProperty("Database");
+        host = config.getProperty("Host");
+        port = config.getProperty("Port");
+        user = config.getProperty("User");
+        rdbms = config.getProperty("Rdbms");
+        DatabaseTextField.setText(database);
+        HostTextField.setText(host);
+        PortTextField.setText(port);
+        UserTextField.setText(user);
+        RDBMSComboBox.setSelectedItem(rdbms);
+        try {            
+            is.close();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
         }
         
     }
-    public boolean isMySQLRdbms(String rdbms){
-        return Rdbms.MYSQL.toString().equalsIgnoreCase(rdbms);
-    }
-    public void readProperties(String rdbms){
-        if(isMySQLRdbms(rdbms)){
-            
-        }
-    }
-    public void updatePortTextField(String adb)
-    {
-        if("MySQL".equals(adb)){
-            PortTextField.setText(String.valueOf(Rdbms.MYSQL.port));
-        }
-        else{
-            PortTextField.setText(String.valueOf(Rdbms.MSSQL.port));
-        }
-    }
-    public void koniec()
+    private void koniec()
     {
         System.exit(0);
+        db.disconnect();
     }
     
     /**
@@ -222,21 +221,71 @@ public final class LoginView extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        Properties config = new Properties();
+        try {
+            OutputStream out = new FileOutputStream(propertiesFile);
+            config.setProperty("Database",DatabaseTextField.getText());
+            logger.info(DatabaseTextField.getText());
+            config.setProperty("Host", HostTextField.getText());
+            config.setProperty("Port", PortTextField.getText());
+            config.setProperty("User", UserTextField.getText());
+            config.setProperty("Rdbms", (String)RDBMSComboBox.getSelectedItem());
+            logger.info(UserTextField.getText());
+            config.store(out, "");
+            out.close();
+            
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(),"FileNotFoundException",JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(),"FileNotFoundException",JOptionPane.ERROR_MESSAGE);
+        }
+        char[] password = jPasswordField1.getPassword();
+        String strPassowrd = String.valueOf(password);
+        rdbms = (String) RDBMSComboBox.getSelectedItem();
+        database = DatabaseTextField.getText();
+        host = HostTextField.getText();
+        port = PortTextField.getText();
+        user = UserTextField.getText();
+        
+        try{
+             db = new Database(rdbms, host, Integer.parseInt(port), database, user, strPassowrd);
+             con = db.getConnection();
+        }
+        catch(DatabaseException ex){
+            JOptionPane.showMessageDialog(this, ex.toString(),"DatabaseException",JOptionPane.ERROR_MESSAGE);
+        }
+        
+        try {
+            if( con!=null){ 
+                con.isValid(1);
+                logger.info("Connection is valid");
+                this.setVisible(false);
+                ImporterView importerView = new ImporterView();
+                importerView.setConnection(con);
+                importerView.setRdbms(rdbms);
+                importerView.setVisible(true);
+                
+            }
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(),"SQLException",JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void RDBMSComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RDBMSComboBoxActionPerformed
         // TODO add your handling code here:
         String db =(String)RDBMSComboBox.getSelectedItem();
         logger.info(db);
-        updatePortTextField(db);
+      
     }//GEN-LAST:event_RDBMSComboBoxActionPerformed
 
     private void CancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelButtonActionPerformed
         // TODO add your handling code here:
         koniec();
     }//GEN-LAST:event_CancelButtonActionPerformed
-
+    public Connection getConnection(){
+        return this.con;
+    }
     /**
      * @param args the command line arguments
      */
@@ -265,20 +314,12 @@ public final class LoginView extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                LoginView dialog = new LoginView(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.loadProperties();
-                dialog.setVisible(true);
-                
+                new LoginView(new javax.swing.JFrame(), true).setVisible(true);
             }
         });
+        
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CancelButton;

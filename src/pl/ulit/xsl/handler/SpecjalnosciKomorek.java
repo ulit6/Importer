@@ -9,6 +9,7 @@ package pl.ulit.xsl.handler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,6 +45,9 @@ public class SpecjalnosciKomorek extends ReadJGPWorkSheet implements DbInsertMSS
             Cell cell;   
             cell = cellIterator.next();
             String kod=cell.getStringCellValue();
+            if(kod.equals("")){
+                break;
+            }
             cell = cellIterator.next();
             String nazwa = cell.getStringCellValue();
             komorki.add(KomorkaOrg.newInstance(kod, nazwa));
@@ -53,14 +57,24 @@ public class SpecjalnosciKomorek extends ReadJGPWorkSheet implements DbInsertMSS
 
     @Override
     public void wstawMSSQL() throws SQLException {
+        String kkor = null;
         logger.info("Wstaw MSSQL LKMOR");
         String sql="INSERT INTO IMPORTER.JGP.LKMOR VALUES(?,?)";
+        String sqlSelect="SELECT KKOR FROM IMPORTER.JGP.LKMOR WHERE KKOR=?";
+        PreparedStatement ps2 = conn.prepareStatement(sqlSelect);
         PreparedStatement ps = conn.prepareStatement(sql);
         for(KomorkaOrg komorka:komorki){
-            ps.setString(1, komorka.getKod());
-            ps.setString(2, komorka.getNazwa());
+            ps2.setString(1, komorka.getKod());
+            ResultSet resultSet = ps2.executeQuery();
+            while(resultSet.next()){
+                kkor = resultSet.getString(1);
+            }
+            if(kkor == null){
+                ps.setString(1, komorka.getKod());
+                 ps.setString(2, komorka.getNazwa());
          //   logger.info(komorka.toString());
-            ps.execute();
+                 ps.execute();
+            }
         }
         
     }

@@ -4,15 +4,11 @@ package pl.ulit.importer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import pl.ulit.dbInsert.DbInsert;
-import pl.ulit.dbInsert.InsertNagFactory;
-import pl.ulit.prh.Element;
 import pl.ulit.prh.GrupaSubstancji;
 import pl.ulit.prh.JednostkaMiary;
 import pl.ulit.prh.Katalog;
@@ -43,8 +39,6 @@ public class ParserPrh extends DefaultHandler {
     private PozycjaPrh pozycjaprh;
     private ArrayList<PozycjaPrh> poList = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(ParserPrh.class);
-    private ArrayList<ObserverElement> observers = new ArrayList<ObserverElement>();
-    private ArrayList<ObserverImport> observersImport = new ArrayList<ObserverImport>();
     private Connection connection;
     private String database;
     

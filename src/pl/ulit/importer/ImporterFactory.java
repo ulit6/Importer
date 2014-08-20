@@ -16,11 +16,11 @@ public class ImporterFactory {
     private static final Logger logger = LoggerFactory.getLogger(ImporterFactory.class);
     public static Importer createImporter(String afilename,Connection acon,String aDatabase)
     {
-        String extension;
-        Integer w=afilename.lastIndexOf(".");
+        String extension = ImporterFactory.extractExtension(afilename);
+       /* Integer w=afilename.lastIndexOf(".");
        
         extension = afilename.substring(w+1, afilename.length());
-        logger.info("Extension: " + extension);
+        logger.info("Extension: " + extension);*/
         if(extension.equals("xml"))
         {
             return new ImporterXml(afilename,acon,aDatabase);
@@ -35,4 +35,8 @@ public class ImporterFactory {
         throw new IllegalArgumentException("No such Importer");
     }
     
+    public static String extractExtension(String fileName){
+         int  index=fileName.lastIndexOf(".");
+         return fileName.substring(index+1, fileName.length());
+    }
 }

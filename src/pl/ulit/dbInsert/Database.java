@@ -12,6 +12,7 @@ package pl.ulit.dbInsert;
 
 
 import java.sql.*;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public class Database {
         driver=Database.DriverFactory(aserver);
        
     }
-    public Database(String aserver,String ahost,Integer aport ,String adatabase, String alogin, String apassword)
+    public Database(String aserver,String ahost,Integer aport ,String adatabase, String alogin, String apassword) throws DatabaseException
     {   
         this.server=aserver;
         this.host=ahost;
@@ -42,7 +43,11 @@ public class Database {
         this.password=apassword;
         
         driver=Database.DriverFactory(aserver);
-        this.connect(this.host, this.port, this.database, this.login, this.password);
+        try {
+            this.connect(this.host, this.port, this.database, this.login, this.password);
+        } catch (DatabaseException ex) {
+            throw new DatabaseException(ex);
+        }
         
     }
     public static String DriverFactory(String aserver)
@@ -55,20 +60,24 @@ public class Database {
         {
             return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         }
-        
+        if("MSSQL".equals(aserver))
+        {
+            return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+        }
         throw new IllegalArgumentException("No such Driver");
         
     }
  
     
 
-    public boolean connect(String ahost,Integer aport ,String adatabase, String alogin, String apassword){
+    public void connect(String ahost,Integer aport ,String adatabase, String alogin, String apassword) throws DatabaseException{
         String url="";
         try{
             Class.forName(driver);
         } catch(java.lang.ClassNotFoundException e) {
             logger.error(e.getLocalizedMessage());
-            return false;
+            throw new DatabaseException(e);
+          
         }
         if("MySQL".equals(this.server))
         {
@@ -78,14 +87,16 @@ public class Database {
         {
              url="jdbc:"+server+"://"+ahost+":"+aport.toString()+";database="+adatabase;
         }
+        if("MSSQL".equals(this.server)) {
+             url="jdbc:sqlserver://"+ahost+":"+aport.toString()+";database="+adatabase;
+        }
         logger.debug(url);
         try {
            this.con = DriverManager.getConnection(url, alogin, apassword);
-            return true;
+           
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            
-            return false;
+            throw new DatabaseException(e);
         }
     }
 
