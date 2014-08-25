@@ -35,12 +35,12 @@ public class ParserPrh extends DefaultHandler {
     private Taryfa taryfa;
     private ArrayList<Taryfa> taList = new ArrayList<Taryfa>();
     private Katalog katalog;
-    private ArrayList<Katalog> kaList = new ArrayList<Katalog>();
+    private final ArrayList<Katalog> kaList = new ArrayList<Katalog>();
     private PozycjaPrh pozycjaprh;
-    private ArrayList<PozycjaPrh> poList = new ArrayList<>();
+    private final ArrayList<PozycjaPrh> poList = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(ParserPrh.class);
-    private Connection connection;
-    private String database;
+    private final Connection connection;
+    private final String database;
     
     public ParserPrh(Connection aconnection,String adatabase)
     {
@@ -60,20 +60,20 @@ public class ParserPrh extends DefaultHandler {
                      prh = new Prh(attributes.getValue("typ"),attributes.getValue("wersja"),
                              attributes.getValue("czas-gen"),Integer.parseInt(attributes.getValue("wer-tech")),
                              Integer.parseInt(attributes.getValue("oddz-nfz")));
-                     logger.info(prh.toString());
+                 //    logger.info(prh.toString());
                    //  this.notifyObservers(prh);
               }
               if (qName.equalsIgnoreCase("jednostka-miary")) {
                   jm = new JednostkaMiary(Integer.parseInt(attributes.getValue("kod")),attributes.getValue("nazwa"),attributes.getValue("status"));
                   jmList.add(jm);
-                  logger.info(jm.toString());
+                //  logger.info(jm.toString());
                  // this.notifyObservers(jm);
               }
               if (qName.equalsIgnoreCase("grupa-substancji")) {
                   gs = new GrupaSubstancji(Integer.parseInt(attributes.getValue("kod")),attributes.getValue("nazwa"),
                           attributes.getValue("status"),Integer.parseInt(attributes.getValue("jednostka")));
                   gsList.add(gs);
-                  logger.info(gs.toString());
+                //  logger.info(gs.toString());
                  // this.notifyObservers(gs);
               }
               if (qName.equalsIgnoreCase("taryfa")) {
@@ -123,7 +123,7 @@ public class ParserPrh extends DefaultHandler {
        }
        if (qName.equalsIgnoreCase("pozycja")) {
            poList.add(pozycjaprh);
-           logger.info(pozycjaprh.toString());
+      //     logger.info(pozycjaprh.toString());
           // this.notifyObservers(pozycjaprh);
            pozycjaprh = null;
            katalog = null;

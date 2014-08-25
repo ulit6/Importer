@@ -35,7 +35,7 @@ public class SpecjalnosciKomorek extends ReadJGPWorkSheet implements DbInsertMSS
         komorki = new ArrayList<>();
     }
     @Override
-    public void read() {
+    public void read() throws IllegalStateException{
         
         Iterator<Row> rowIterator = sheet.iterator();
         skipRows(rowIterator, 3);

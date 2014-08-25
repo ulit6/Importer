@@ -11,15 +11,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.xml.sax.SAXException;
 import pl.ulit.importer.Import;
+import pl.ulit.importer.Importer;
+import pl.ulit.importerView.Observer;
+import pl.ulit.importerView.Subject;
 
 /**
  *
  * @author pawel
  */
-public class JGPv5 extends XlsParser implements Import,DbInsertMSSQL {
+public class JGP extends XlsParser implements Import,DbInsertMSSQL,Subject {
     private HSSFSheet sheet;
     private final Connection conn;
     private final String database;
@@ -31,12 +35,13 @@ public class JGPv5 extends XlsParser implements Import,DbInsertMSSQL {
     private final ReadJGPWorkSheet listaRozpoznan;
     private final ReadJGPWorkSheet listaProcedur;
     private final ReadJGPWorkSheet parametryJGP;
+    private final ArrayList<Observer> observers;
     
-    
-    public JGPv5(String afileName,Connection conn,String database,int wprm) throws FileNotFoundException, IOException {
+    public JGP(String afileName,Connection conn,String database,int wprm,ArrayList<Observer> observers) throws FileNotFoundException, IOException {
         super(afileName);
         this.conn = conn;
         this.database = database;
+        this.observers = observers;
         wersjaJGP = new WersjaJGP(this.conn);
         specjalnosciKomorek = new SpecjalnosciKomorek(this.conn);
         zakresyJGP = new ZakresyJGP(this.conn);
@@ -47,57 +52,68 @@ public class JGPv5 extends XlsParser implements Import,DbInsertMSSQL {
         parametryJGP = new ParametryJGPSheet(this.conn);
     }
 
-    private void setSheet(HSSFSheet aSheet)
-    {
+    private void setSheet(HSSFSheet aSheet){
         sheet= aSheet;
     }
+    
+     @Override
+    public void start() throws SAXException, IOException, SQLException,IllegalStateException {
+        parse();
+        wstawMSSQL();
+    }
+    
     @Override
-    public void parse()throws SQLException {
+    public void parse()throws SQLException,IllegalStateException {
        SheetHandler sh;
        setSheet(wbp.getSheet("wersja JGP"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        wersjaJGP.setSheet(this.sheet);
        wersjaJGP.read();
        setSheet(wbp.getSheet("wykaz specjalności komórek"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        specjalnosciKomorek.setSheet(this.sheet);
        specjalnosciKomorek.read();
        ZakresyJGP zakresy= (ZakresyJGP) zakresyJGP;
        setSheet(wbp.getSheet("Zakresy JGP"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        zakresy.setSheetZakresy(this.sheet);
        setSheet(wbp.getSheet("Mechanizm osobodni"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        zakresy.setSheetMechOsob(this.sheet);
        zakresy.setWprm(wersjaJGP.getWprm());
        zakresyJGP.read();
        
        setSheet(wbp.getSheet("Ograniczenie pobytu"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        ograniczeniePobytu.setSheet(this.sheet);
        ograniczeniePobytu.setWprm(wersjaJGP.getWprm());
        ograniczeniePobytu.read();
        setSheet(wbp.getSheet("Ograniczenie wieku"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        ograniczenieWieku.setSheet(this.sheet);
        ograniczenieWieku.setWprm(wersjaJGP.getWprm());
        ograniczenieWieku.read();
        setSheet(wbp.getSheet("Listy rozpoznań"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        listaRozpoznan.setSheet(this.sheet);
        listaRozpoznan.setWprm(wersjaJGP.getWprm());
        listaRozpoznan.read();
        setSheet(wbp.getSheet("Listy procedur"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        listaProcedur.setSheet(this.sheet);
        ListyProcedur lp = (ListyProcedur)listaProcedur;
        lp.setWrjgp(wersjaJGP.getWrjgp());
        listaProcedur.setWprm(wersjaJGP.getWprm());
        listaProcedur.read();
        setSheet(wbp.getSheet("Parametry JGP"));
+       notifyObservers(XlsParser.getTime()+" Info: Odczyt arkusza XLS: " + sheet.getSheetName());
        this.parametryJGP.setSheet(this.sheet);
        parametryJGP.setWprm(wersjaJGP.getWprm());
        parametryJGP.read();
        
     }
 
-    @Override
-    public void start() throws SAXException, IOException, SQLException {
-        parse();
-        wstawMSSQL();
-    }
+   
 
     @Override
     public void wstawMSSQL() throws SQLException {
@@ -132,5 +148,27 @@ public class JGPv5 extends XlsParser implements Import,DbInsertMSSQL {
         }
         else
             return new OgraniczeniePobytuSheetv6(this.conn);
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyObservers(String message) {
+         for(Observer ob: observers){
+            ob.update(message);
+        }   
+    }
+
+    @Override
+    public void notifyObserversGUI(Throwable ex) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

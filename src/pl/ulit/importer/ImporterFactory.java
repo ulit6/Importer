@@ -1,7 +1,10 @@
 package pl.ulit.importer;
 import java.sql.Connection;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.ulit.importerView.Observer;
+import pl.ulit.importerView.Subject;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -14,29 +17,28 @@ import org.slf4j.LoggerFactory;
 public class ImporterFactory {
     
     private static final Logger logger = LoggerFactory.getLogger(ImporterFactory.class);
-    public static Importer createImporter(String afilename,Connection acon,String aDatabase)
+    public static Importer createImporter(String afilename,Connection acon,String aDatabase,ArrayList<Observer> observers)
     {
+   
         String extension = ImporterFactory.extractExtension(afilename);
-       /* Integer w=afilename.lastIndexOf(".");
-       
-        extension = afilename.substring(w+1, afilename.length());
-        logger.info("Extension: " + extension);*/
         if(extension.equals("xml"))
         {
-            return new ImporterXml(afilename,acon,aDatabase);
+            return new ImporterXml(afilename,acon,aDatabase,observers);
         } else if(extension.equals("PRH"))
         {
-            return new ImporterXml(afilename,acon,aDatabase);
+            return new ImporterXml(afilename,acon,aDatabase,observers);
         }
         if("xls".equalsIgnoreCase(extension))
         {
-            return new ImporterXls(afilename, acon, aDatabase);
+            return new ImporterXls(afilename, acon, aDatabase,observers);
         }
-        throw new IllegalArgumentException("No such Importer");
+        throw new IllegalArgumentException("Nieobsługiwany typ importu");
     }
     
     public static String extractExtension(String fileName){
          int  index=fileName.lastIndexOf(".");
          return fileName.substring(index+1, fileName.length());
     }
+
+    
 }

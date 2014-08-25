@@ -24,11 +24,11 @@ import pl.ulit.importer.Factory;
  *
  * @author pawel
  */
-public class ImporterView extends javax.swing.JFrame {
+public class ImporterView extends javax.swing.JFrame implements Observer{
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ImporterView.class);
     private Connection connection;
     private String rdbms;
-    private Factory factory;
+    private Thread factory;
     /**
      * Creates new form ImporterView
      */
@@ -67,6 +67,8 @@ public class ImporterView extends javax.swing.JFrame {
         fileTextField = new javax.swing.JTextField();
         openButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         open = new javax.swing.JMenuItem();
@@ -101,6 +103,10 @@ public class ImporterView extends javax.swing.JFrame {
             }
         });
 
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -117,7 +123,8 @@ public class ImporterView extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(223, 223, 223)
                         .addComponent(startButton)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -127,9 +134,11 @@ public class ImporterView extends javax.swing.JFrame {
                     .addComponent(textLabel)
                     .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(openButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(startButton)
-                .addGap(30, 30, 30))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {fileTextField, openButton, textLabel});
@@ -196,10 +205,11 @@ public class ImporterView extends javax.swing.JFrame {
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         // TODO add your handling code here:
-        factory = Factory.newInstance(connection, fileTextField.getText(),rdbms);
+        jTextArea1.setText("");
+        factory = new Thread(Factory.newInstance(connection, fileTextField.getText(),rdbms,this));
         try {
-            factory.go();
-        } catch (IOException ex) {
+            factory.start();
+       /* } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
         } catch (ParserConfigurationException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(),"ParserConfigurationException",JOptionPane.ERROR_MESSAGE);
@@ -209,7 +219,10 @@ public class ImporterView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.toString(),"UnsupportedOperationException",JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(),"SQLException",JOptionPane.ERROR_MESSAGE);
+        */}catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(),"IllegalArgumentException",JOptionPane.ERROR_MESSAGE);
         }
+        
     }//GEN-LAST:event_startButtonActionPerformed
 
     /**
@@ -255,9 +268,23 @@ public class ImporterView extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JMenuItem open;
     private javax.swing.JButton openButton;
     private javax.swing.JButton startButton;
     private javax.swing.JLabel textLabel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update(String message) {
+        jTextArea1.append(message+"\n");
+        
+    }
+
+    @Override
+    public void updateGUI(Throwable ex) {
+     //   logger.info(ex.getClass().getName());
+        JOptionPane.showMessageDialog(this, ex.toString(),ex.getClass().getName(),JOptionPane.ERROR_MESSAGE);
+    }
 }
