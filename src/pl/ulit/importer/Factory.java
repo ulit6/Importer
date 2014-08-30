@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,7 +42,7 @@ public class Factory implements Subject,Runnable{
     }
     
     private void  go() throws IllegalArgumentException,IOException, ParserConfigurationException, SAXException, UnsupportedOperationException, FileNotFoundException, 
-            SQLException,IllegalStateException{
+            SQLException,IllegalStateException,NoSuchElementException{
         notifyObservers(Factory.getTime()+" Info: Początek importu: ");
         Importer importer = ImporterFactory.createImporter(this.fileName,this.connection,rdbms,observers);
         Import imp = importer.orderImport();
@@ -80,9 +81,17 @@ public class Factory implements Subject,Runnable{
     public void run() {
         try {
             go();
-        } catch (IllegalArgumentException | IOException | ParserConfigurationException | SAXException | UnsupportedOperationException | IllegalStateException | SQLException ex ) {
+        } catch (IllegalArgumentException | IOException | ParserConfigurationException | 
+                SAXException | UnsupportedOperationException | IllegalStateException |NoSuchElementException| SQLException ex ) {
              notifyObservers(Factory.getTime()+" Error: "+ ex.getLocalizedMessage());
              notifyObserversGUI(ex);    
+            try {
+                connection.rollback();
+            } catch (SQLException ex1) {
+                logger.info(ex1.getLocalizedMessage());
+                notifyObservers(Factory.getTime()+" Error: "+ ex1.getLocalizedMessage());
+                notifyObserversGUI(ex1);
+            }
         }
     }
 

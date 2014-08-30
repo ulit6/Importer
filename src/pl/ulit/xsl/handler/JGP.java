@@ -117,29 +117,44 @@ public class JGP extends XlsParser implements Import,DbInsertMSSQL,Subject {
 
     @Override
     public void wstawMSSQL() throws SQLException {
+        notifyObservers(XlsParser.getTime()+" Info: Początek importu danych ");
+        conn.setAutoCommit(false);
+        notifyObservers(XlsParser.getTime()+" Info: Import wersji JGP");
         wersjaJGP.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import specjalności komórek");
         DbInsertMSSQL dbSpecjalnosciKomorek = (DbInsertMSSQL) specjalnosciKomorek;
         dbSpecjalnosciKomorek.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import zakresów JGP");
         DbInsertMSSQL dbZakresyJGP = (DbInsertMSSQL) zakresyJGP;
         dbZakresyJGP.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import ograniczenia pobytów");
         DbInsertMSSQL dbOgraniczeniePobytu = (DbInsertMSSQL) ograniczeniePobytu;
         dbOgraniczeniePobytu.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import ograniczenia wieku");
         DbInsertMSSQL dbOgraniczenieWieku = (DbInsertMSSQL) ograniczenieWieku;
         dbOgraniczenieWieku.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import listy rozpoznań");
         DbInsertMSSQL dbInsertListaRozpoznan = (DbInsertMSSQL)listaRozpoznan;
         dbInsertListaRozpoznan.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import listy procedur");
         DbInsertMSSQL dbInsertListaProcedur = (DbInsertMSSQL)listaProcedur;
         dbInsertListaProcedur.wstawMSSQL();
+        notifyObservers(XlsParser.getTime()+" Info: Import parametrów JGP");
         DbInsertMSSQL dbInsertParametryMSSQL = (DbInsertMSSQL)parametryJGP;
         dbInsertParametryMSSQL.wstawMSSQL();
+        conn.commit();
+        notifyObservers(XlsParser.getTime()+" Info: Koniec importu");
     }
     
     private  ReadJGPWorkSheet OgraniczenieWiekuFactory(int wprm){
         if( wprm == 5){
             return new OgraniczenieWiekuSheet(this.conn);
         }
-        else
+        if(wprm ==6){
             return new OgraniczenieWiekuSheetv6(this.conn);
+        }
+        else
+            return new OgraniczenieWiekuSheetv7(this.conn);
     }
     
     private  ReadJGPWorkSheet OgraniczeniePobytuFactory(int wprm){

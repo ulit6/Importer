@@ -207,7 +207,7 @@ public class ImporterView extends javax.swing.JFrame implements Observer{
         // TODO add your handling code here:
         jTextArea1.setText("");
         factory = new Thread(Factory.newInstance(connection, fileTextField.getText(),rdbms,this));
-        try {
+      //  try {
             factory.start();
        /* } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE);
@@ -219,9 +219,9 @@ public class ImporterView extends javax.swing.JFrame implements Observer{
             JOptionPane.showMessageDialog(this, ex.toString(),"UnsupportedOperationException",JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(),"SQLException",JOptionPane.ERROR_MESSAGE);
-        */}catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.toString(),"IllegalArgumentException",JOptionPane.ERROR_MESSAGE);
-        }
+        *///}catch (IllegalArgumentException ex) {
+        //    JOptionPane.showMessageDialog(this, ex.toString(),"IllegalArgumentException",JOptionPane.ERROR_MESSAGE);
+       // }
         
     }//GEN-LAST:event_startButtonActionPerformed
 

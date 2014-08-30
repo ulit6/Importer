@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author pawel
  */
-public class OgraniczenieWiekuSheetv6 extends ReadJGPWorkSheet implements DbInsertMSSQL{
+public class OgraniczenieWiekuSheetv7 extends ReadJGPWorkSheet implements DbInsertMSSQL{
     
-    private static final Logger logger = LoggerFactory.getLogger(OgraniczenieWiekuSheetv6.class);
-    private final  List<OgraniczenieWiekuV6> listaOgraniczeniaWieku;
+    private static final Logger logger = LoggerFactory.getLogger(OgraniczenieWiekuSheetv7.class);
+    private final  List<OgraniczenieWiekuV7> listaOgraniczeniaWieku;
     private final Connection conn;
 
    
-    public OgraniczenieWiekuSheetv6(Connection conn) {
+    public OgraniczenieWiekuSheetv7(Connection conn) {
        // super(asheet);
         listaOgraniczeniaWieku = new ArrayList<>();
         this.conn = conn;
@@ -50,10 +50,10 @@ public class OgraniczenieWiekuSheetv6 extends ReadJGPWorkSheet implements DbInse
            kodOgraniczeniaWieku = getKodOgraniczeniaWieku(cellIterator);
            ponizejGornaGranica = getPonizejGornaGranica(cellIterator);
            powyzejDolnaGranica = getPowyzejDolnaGranica(cellIterator);
-           jednostka = getJednostka(cellIterator);
+          // jednostka = getJednostka(cellIterator);
            
-           listaOgraniczeniaWieku.add(OgraniczenieWiekuV6.newInstance(kodOgraniczeniaWieku, 
-                   jednostka, ponizejGornaGranica,  powyzejDolnaGranica));
+           listaOgraniczeniaWieku.add(OgraniczenieWiekuV7.newInstance(kodOgraniczeniaWieku, 
+                    ponizejGornaGranica,  powyzejDolnaGranica));
        }
      
     }
@@ -77,21 +77,15 @@ public class OgraniczenieWiekuSheetv6 extends ReadJGPWorkSheet implements DbInse
          return numericCelltoInt(cell);
     }
     
-    private String getJednostka(Iterator<Cell> cellIterator){
-        Cell cell = cellIterator.next();
-        if(isBlankCell(cell)){
-             return "";
-        }
-        return cell.getStringCellValue();      
-    }
+    
 
     @Override
     public void wstawMSSQL() throws SQLException {
-        logger.info("Wstaw MSSQL OGRWK v6");
+        logger.info("Wstaw MSSQL OGRWK v7");
         String sql="INSERT INTO IMPORTER.JGP.OGRWK(WPRM,KOGR,GRGR,DLGR,JDGR) "+
                 "VALUES(?,?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(sql);
-        for(OgraniczenieWiekuV6 ograniczenie:listaOgraniczeniaWieku){
+        for(OgraniczenieWiekuV7 ograniczenie:listaOgraniczeniaWieku){
             ps.setInt(1, wprm);
             ps.setInt(2, ograniczenie.getKod());
             ps.setInt(3, ograniczenie.getPonizej());

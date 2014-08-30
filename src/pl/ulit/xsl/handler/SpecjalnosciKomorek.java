@@ -44,7 +44,8 @@ public class SpecjalnosciKomorek extends ReadJGPWorkSheet implements DbInsertMSS
             Iterator<Cell> cellIterator = row.cellIterator();
             Cell cell;   
             cell = cellIterator.next();
-            String kod=cell.getStringCellValue();
+            String kod=getKodKomorki(cell);
+            logger.info("Kod: " + kod);
             if(kod.equals("")){
                 break;
             }
@@ -54,7 +55,19 @@ public class SpecjalnosciKomorek extends ReadJGPWorkSheet implements DbInsertMSS
         }
             
     }
-
+    
+    public String getKodKomorki(Cell cell){
+        String kodKomorki="";
+        if(isNumericCell(cell)){
+          double kod =  cell.getNumericCellValue();
+          kodKomorki = String.valueOf(kod).substring(0, 4);
+        }
+        else{
+            kodKomorki = cell.getStringCellValue();
+        }
+        
+        return kodKomorki;
+    }
     @Override
     public void wstawMSSQL() throws SQLException {
         String kkor = null;
